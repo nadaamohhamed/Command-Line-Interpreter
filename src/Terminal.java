@@ -82,7 +82,12 @@ public class Terminal {
     public void wc(){
 
     }
+    public void greaterThanOperator(){
 
+    }
+    public void greaterThanOperator2(){
+
+    }
 
     public void chooseCommandAction(){
         String choice = parser.getCommandName();
@@ -128,6 +133,12 @@ public class Terminal {
                 break;
             case "wc":
                 wc();
+                break;
+            case ">":
+                greaterThanOperator();
+                break;
+            case ">>":
+                greaterThanOperator2();
                 break;
             default:
                 System.out.println("Error: Command not found or invalid parameters are entered!");
