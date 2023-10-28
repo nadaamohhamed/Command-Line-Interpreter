@@ -40,7 +40,7 @@ public class Terminal {
             for(int i = 0 ; i < parser.getArgs().length ; i++){
                 nwPath+= parser.getArgs()[i] +" ";
             }
-            if(nwPath.charAt(0) =='\\' || (nwPath.length()>= 3 && nwPath.charAt(0) == 'C' && nwPath.charAt(1) == ':' && nwPath.charAt(2) == '\\')){
+            if(nwPath.charAt(0) =='\\' || (nwPath.length()>= 3  && nwPath.charAt(1) == ':' && nwPath.charAt(2) == '\\')){
                 if(nwPath.charAt(0) =='\\'){
                     nwPath = "C:" + nwPath ;
                 }
@@ -104,7 +104,13 @@ public class Terminal {
         }
     }
     public void rm(){
-
+        String name =  parser.getArgs()[0];
+        if(path.charAt(path.length()-1) != '\\')  name = '\\' + name;
+        File file = new File(path+name);
+        if(file.exists()){
+            file.delete();
+        }
+        System.out.println();
     }
     public void cat(){
 
