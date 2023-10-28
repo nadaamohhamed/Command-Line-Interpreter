@@ -1,11 +1,11 @@
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Scanner;
+import java.io.IOException;
+import java.util.*;
 
 public class Terminal {
     private Parser parser;
     private String path;
+    private List<String> usedCommands = new ArrayList<String>();
     public Terminal(Parser parser) {
         this.parser = parser;
         this.path = System.getProperty("user.home");
@@ -60,7 +60,18 @@ public class Terminal {
 
 
     public void touch(){
-
+        File newFile = new File(parser.getArgs()[0]);
+        try{
+            newFile.createNewFile();
+        }
+        catch(IOException e){
+            System.out.println("Error: No such directory exists!");
+        }
+    }
+    public void history(){
+        for(int i = 0;i< usedCommands.size();i++){
+            System.out.println(i + 1 + "  " + usedCommands.get(i));
+        }
     }
     public void rm(){
 
@@ -106,6 +117,9 @@ public class Terminal {
             case "touch":
                 touch();
                 break;
+            case "history":
+                history();
+                break;
             case "rm":
                 rm();
                 break;
@@ -128,6 +142,7 @@ public class Terminal {
             if (input.equals("exit"))
                 break;
             t.parser.parse(input);
+            t.usedCommands.add(t.parser.getCommandName());
             t.chooseCommandAction();
         }
     }
