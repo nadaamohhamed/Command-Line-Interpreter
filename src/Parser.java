@@ -1,8 +1,9 @@
 public class Parser {
-    private String commandName = "";
+    private String commandName;
     private String[] args;
 
     public void parse(String input){
+        commandName = "";
         String[] subStrings = input.split(" ");
         commandName += subStrings[0];
         int sz = subStrings.length - 1;
