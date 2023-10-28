@@ -40,7 +40,7 @@ public class Terminal {
             for(int i = 0 ; i < parser.getArgs().length ; i++){
                 nwPath+= parser.getArgs()[i] +" ";
             }
-            if(nwPath.charAt(0) =='\\' || (nwPath.length()>= 3  && nwPath.charAt(1) == ':' && nwPath.charAt(2) == '\\')){
+            if(nwPath.charAt(0) =='\\' || (nwPath.length()>= 3 && nwPath.charAt(1) == 'C' && nwPath.charAt(1) == ':' && nwPath.charAt(2) == '\\')){
                 if(nwPath.charAt(0) =='\\'){
                     nwPath = "C:" + nwPath ;
                 }
@@ -76,9 +76,24 @@ public class Terminal {
         System.out.println();
     }
 
-
     public void mkdir(){
-
+        String[] args = parser.getArgs();
+        for(int i=0; i < args.length;i++){
+            String currPath = args[i];
+            if(currPath.contains("\\")){
+                File f1=new File(args[i]);
+                f1.mkdir();
+            }
+            else if(currPath.charAt(0) =='\\' || (currPath.length()>= 3 && currPath.charAt(1) == 'C' && currPath.charAt(1) == ':' && currPath.charAt(2) == '\\')){
+                if(currPath.charAt(0) =='\\'){
+                    currPath = "C:" + currPath;
+                }
+            }
+            else{
+                File f1=new File(path+"\\"+args[i]);
+                f1.mkdir();
+            }
+        }
     }
     public void rmdir(){
 
