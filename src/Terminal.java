@@ -21,7 +21,39 @@ public class Terminal {
         System.out.println(path);
     }
     public void cd(){
-
+        if(parser.getArgs().length == 0){
+            this.path = System.getProperty("user.home");
+        }else if(parser.getArgs()[0].equals("..")){
+            if(path.charAt(path.length()-1) != '\\') {
+                int ind = 0;
+                for (int i = path.length() - 1; i >= 0 ; i--){
+                    if(path.charAt(i) == '\\') {
+                        ind = i;
+                        break;
+                    }
+                }
+                if(path.charAt(ind-1) != ':') path = path.substring(0,ind);
+                else path = path.substring(0,ind+1);
+            }
+        }else{
+            String nwPath = "";
+            for(int i = 0 ; i < parser.getArgs().length ; i++){
+                nwPath+= parser.getArgs()[i] +" ";
+            }
+            if(nwPath.charAt(0) =='\\' || (nwPath.length()>= 3 && nwPath.charAt(0) == 'C' && nwPath.charAt(1) == ':' && nwPath.charAt(2) == '\\')){
+                if(nwPath.charAt(0) =='\\'){
+                    nwPath = "C:" + nwPath ;
+                }
+            }else{
+                if(path.charAt(path.length()-1)!='\\')
+                    nwPath = path+'\\'+nwPath;
+            }
+            if(nwPath.charAt(nwPath.length()-1) == ' ' ) nwPath = nwPath.substring(0,nwPath.length()-1);
+            if(nwPath.charAt(nwPath.length()-1) == '\\' && nwPath.charAt(nwPath.length()-2) !=':') nwPath = nwPath.substring(0,nwPath.length()-1);
+            File dir = new File(nwPath);
+            if(dir.isDirectory()) path = nwPath;
+            else System.out.println("Cannot find path '"+nwPath+"' because it does not exist.");
+        }
     }
     public void ls(){
         File currDir = new File(path);
@@ -146,7 +178,7 @@ public class Terminal {
         Terminal t = new Terminal(new Parser());
         Scanner scan = new Scanner(System.in);
         while(true) {
-            System.out.print(">");
+            System.out.print(t.path+">");
             String input = scan.nextLine();
             if (input.equals("exit"))
                 break;
