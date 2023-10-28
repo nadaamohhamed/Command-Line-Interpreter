@@ -5,9 +5,10 @@ import java.util.Scanner;
 
 public class Terminal {
     private Parser parser;
-
+    private String path;
     public Terminal(Parser parser) {
         this.parser = parser;
+        this.path = System.getProperty("user.home");
     }
 
     public void echo(){
@@ -17,14 +18,13 @@ public class Terminal {
         System.out.println();
     }
     public void pwd(){
-        String dir = System.getProperty("user.dir");
-        System.out.println(dir);
+        System.out.println(path);
     }
     public void cd(){
 
     }
     public void ls(){
-        File currDir = new File(".");
+        File currDir = new File(path);
         File[] files = currDir.listFiles();
         Arrays.sort(files);
         for(File f : files){
@@ -34,15 +34,12 @@ public class Terminal {
         System.out.println();
     }
     public void ls_r(){
-        File currDir = new File(".");
+        File currDir = new File(path);
         File[] files = currDir.listFiles();
         Arrays.sort(files, Collections.reverseOrder());
         for(File f : files){
-            if(f.isDirectory())
+            if(f.isDirectory() || f.isFile())
                 System.out.print(f.getName() + "    ");
-            else if(f.isFile()){
-                System.out.print(f.getName() + "    ");
-            }
         }
         System.out.println();
     }
@@ -123,9 +120,10 @@ public class Terminal {
         }
     }
     public static void main(String[] args){
+        Terminal t = new Terminal(new Parser());
+        Scanner scan = new Scanner(System.in);
         while(true) {
-            Terminal t = new Terminal(new Parser());
-            Scanner scan = new Scanner(System.in);
+            System.out.print(">");
             String input = scan.nextLine();
             if (input.equals("exit"))
                 break;
