@@ -1,4 +1,6 @@
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 public class Terminal {
@@ -120,10 +122,29 @@ public class Terminal {
         }
     }
     public void cp(){
+        String[] args = parser.getArgs();
+        String firstFile=args[0];
+        String secondFile=args[1];
+        File oriFile = new File(path+"\\"+firstFile);
+        File newFile = new File(path+"\\"+secondFile);
+        try{
+            Files.copy(oriFile.toPath(),newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }catch(Exception e){
+            System.out.println("Error");
+        }
 
     }
     public void cp_r(){
-
+        String[] args = parser.getArgs();
+        String firstFile=args[0];
+        String secondFile=args[1];
+        File oriFile = new File(path+"\\"+firstFile);
+        File newFile = new File(path+"\\"+secondFile);
+        try{
+            Files.copy(oriFile.toPath(),newFile.toPath(), StandardCopyOption.REPLACE_EXISTING,StandardCopyOption.COPY_ATTRIBUTES);
+        }catch(Exception e){
+            System.out.println("Error");
+        }
     }
     public void touch(){
         String filePath = "";
@@ -162,7 +183,42 @@ public class Terminal {
         }
     }
     public void cat(){
+        String[] args = parser.getArgs();
+        if(args.length ==1){
+            try{
+            String firstFile=args[0];
+            File file = new File(path+"\\"+firstFile);
+            Scanner sc = new Scanner(file);
+            while (sc.hasNextLine())
+                System.out.println(sc.nextLine());
+            }catch(IOException e){
+                System.out.println("Error");
+            }
+        }else{
+            try{
+                String line,content="";
+                String firstFile=args[0];
+                String secondFile=args[1];
+                FileReader frOne = new FileReader(path+"\\"+firstFile);
+                BufferedReader brOne = new BufferedReader(frOne);
+                FileReader frTwo = new FileReader(path+"\\"+secondFile);
+                BufferedReader brTwo = new BufferedReader(frTwo);
 
+                for(line=brOne.readLine(); line!=null; line=brOne.readLine())
+                    content = content + line +" " ;
+                brOne.close();
+
+                for(line=brTwo.readLine(); line!=null; line=brTwo.readLine())
+                    content = content + line;
+                brTwo.close();
+                System.out.println(content);
+
+
+            }catch (IOException e){
+                System.out.println("Error");
+            }
+
+        }
     }
     public void wc() {
         String name = parser.getArgs()[0];
