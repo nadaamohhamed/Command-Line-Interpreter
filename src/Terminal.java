@@ -1,7 +1,7 @@
+import org.apache.commons.io.FileUtils;
+
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 
@@ -141,19 +141,27 @@ public class Terminal {
         String secondFile=args[1];
         String sourceDirectory = path+"\\"+firstFile;
         String targetDirectory = path+"\\"+secondFile+"\\"+firstFile;
-        try{
-            Files.walk(Paths.get(sourceDirectory))
-                    .forEach(source -> {
-                        Path destination = Paths.get(targetDirectory, source.toString()
-                                .substring(sourceDirectory.length()));
-                        try {
-                            Files.copy(source, destination);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
-        }catch(Exception e){
-            System.out.println("Error");
+//        try{
+//            Files.walk(Paths.get(sourceDirectory))
+//                    .forEach(source -> {
+//                        Path destination = Paths.get(targetDirectory, source.toString()
+//                                .substring(sourceDirectory.length()));
+//                        try {
+//                            Files.copy(source, destination);
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    });
+//        }catch(Exception e){
+//            System.out.println("Error");
+//        }
+        File sourceLocation= new File(sourceDirectory);
+        File targetLocation = new File(targetDirectory);
+        try {
+            FileUtils.copyDirectory(sourceLocation, targetLocation);
+        }
+        catch (IOException e){
+
         }
     }
     public void touch(){
