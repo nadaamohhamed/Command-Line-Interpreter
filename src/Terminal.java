@@ -121,7 +121,20 @@ public class Terminal {
 
     }
     public void touch(){
-        File newFile = new File(parser.getArgs()[0]);
+        String filePath = "";
+        // No path given - file name only
+        if(!parser.getArgs()[0].contains("\\")){
+            filePath = path + '\\' + parser.getArgs()[0];
+        }
+        // Relative path
+        else if(parser.getArgs()[0].charAt(0) != '\\'){
+            filePath = path + '\\' + parser.getArgs()[0];
+        }
+        // Full path
+        else if(parser.getArgs()[0].charAt(0) == '\\'){
+            filePath = parser.getArgs()[0];
+        }
+        File newFile = new File(filePath);
         try{
             newFile.createNewFile();
         }
@@ -215,7 +228,7 @@ public class Terminal {
         Terminal t = new Terminal(new Parser());
         Scanner scan = new Scanner(System.in);
         while(true) {
-            System.out.print(t.path+">");
+            System.out.print(">");
             String input = scan.nextLine();
             if (input.equals("exit"))
                 break;
