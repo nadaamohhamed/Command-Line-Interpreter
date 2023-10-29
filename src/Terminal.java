@@ -1,14 +1,15 @@
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class Terminal {
     private Parser parser;
     private String path;
+    private boolean error;
     private List<String> usedCommands = new ArrayList<String>();
     public Terminal(Parser parser) {
         this.parser = parser;
         this.path = System.getProperty("user.home");
+        this.error = false;
     }
 
     public void echo(){
@@ -45,10 +46,14 @@ public class Terminal {
                     nwPath = "C:" + nwPath ;
                 }
             }else{
+                //case of path = "c:\"
                 if(path.charAt(path.length()-1)!='\\')
                     nwPath = path+'\\'+nwPath;
             }
+            // case of nwPath contain extra space = "c:\"
             if(nwPath.charAt(nwPath.length()-1) == ' ' ) nwPath = nwPath.substring(0,nwPath.length()-1);
+
+            // case of nwPath contain extra backslash
             if(nwPath.charAt(nwPath.length()-1) == '\\' && nwPath.charAt(nwPath.length()-2) !=':') nwPath = nwPath.substring(0,nwPath.length()-1);
             File dir = new File(nwPath);
             if(dir.isDirectory()) path = nwPath;
@@ -153,24 +158,98 @@ public class Terminal {
         File file = new File(path+name);
         if(file.exists()){
             file.delete();
+        }else{
         }
-        System.out.println();
     }
     public void cat(){
 
     }
-    public void wc(){
-
+    public void wc() {
+        String name = parser.getArgs()[0];
+        String file = name;
+        if (path.charAt(path.length() - 1) != '\\') name = '\\' + name;
+        int charNum = 0, wordNum = 0, lineNum = 0;
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(path + name));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String temp[] = line.split(" ");
+                wordNum+=temp.length+1;
+                charNum +=line.length();
+                lineNum++;
+            }
+            System.out.println(lineNum + " " + wordNum + " " + charNum + " " + file);
+        } catch (FileNotFoundException e) {
+            System.out.println("Error: No such file exists!");
+        } catch (IOException e) {
+            System.out.println("Error: Can't read from this file");
+        }
     }
     public void greaterThanOperator(){
+        if(!Objects.equals(parser.getArgs()[parser.getArgs().length - 2], ">")) {
+            error = true;
+            return;
+        }
+        String name = parser.getArgs()[parser.getArgs().length - 1];
+        if (path.charAt(path.length() - 1) != '\\') name = '\\' + name;
 
+        File file = new File(path+name);
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+//            throw new RuntimeException(e);
+        }
+        try {
+            PrintStream stream = new PrintStream(file);
+            System.setOut(stream);
+        } catch (FileNotFoundException e) {
+//            throw new RuntimeException(e);
+        }
     }
     public void greaterThanOperator2(){
+        if(!Objects.equals(parser.getArgs()[parser.getArgs().length - 2], ">>")) {
+            error = true;
+            return;
+        }
+        String name = parser.getArgs()[parser.getArgs().length - 1];
+        if (path.charAt(path.length() - 1) != '\\') name = '\\' + name;
+        String data = "";
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(path+name));
+            String line;
+            StringBuilder dataBuilder = new StringBuilder();
+            while ((line = reader.readLine()) != null) {
+                dataBuilder.append(line).append('\n');
+            }
+            data = dataBuilder.toString();
+        } catch (FileNotFoundException e) {
 
+        } catch (IOException e) {
+
+        }
+
+        File file = new File(path+name);
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            error = true;
+            return;
+        }
+        try {
+            PrintStream stream = new PrintStream(file);
+            System.setOut(stream);
+            System.out.print(data);
+        } catch (FileNotFoundException e) {
+            error = true;
+        }
     }
 
     public void chooseCommandAction(){
+
         String choice = parser.getCommandName();
+        if(error) choice ="error";
         switch (choice){
             case "echo":
                 echo();
@@ -227,14 +306,30 @@ public class Terminal {
     public static void main(String[] args){
         Terminal t = new Terminal(new Parser());
         Scanner scan = new Scanner(System.in);
+        PrintStream os = System.out;
         while(true) {
-            System.out.print(">");
+            t.error = false;
+            System.out.print(t.path + ">");
             String input = scan.nextLine();
             if (input.equals("exit"))
                 break;
             t.parser.parse(input);
+            for(int i = 0 ; i < t.parser.getArgs().length ; i++ ){
+                String arg = t.parser.getArgs()[i];
+                if(arg.equals(">")){
+                    t.greaterThanOperator();
+                    t.parser.removeLast2();
+                }else if(arg.equals(">>")){
+                    t.greaterThanOperator2();
+                    t.parser.removeLast2();
+                }
+            }
             t.usedCommands.add(t.parser.getCommandName());
             t.chooseCommandAction();
+            if(System.out != os) {
+                System.out.close();
+                System.setOut(os);
+            }
         }
     }
 }

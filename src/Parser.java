@@ -28,4 +28,12 @@ public class Parser {
     public String[] getArgs(){
         return args;
     }
+
+    public void removeLast2(){
+        String nwArgs[] = new String[args.length-2];
+        for(int i = 0 ; i < args.length-2 ; i++){
+            nwArgs[i] = args[i];
+        }
+        args = nwArgs;
+    }
 }
