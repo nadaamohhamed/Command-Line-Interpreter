@@ -80,23 +80,39 @@ public class Terminal {
         String[] args = parser.getArgs();
         for(int i=0; i < args.length;i++){
             String currPath = args[i];
-            if(currPath.contains("\\")){
-                File f1=new File(args[i]);
-                f1.mkdir();
-            }
-            else if(currPath.charAt(0) =='\\' || (currPath.length()>= 3 && currPath.charAt(1) == 'C' && currPath.charAt(1) == ':' && currPath.charAt(2) == '\\')){
+            if(currPath.charAt(0) =='\\' || (currPath.length()>= 3 && currPath.charAt(0) == 'C' && currPath.charAt(1) == ':' && currPath.charAt(2) == '\\')){
                 if(currPath.charAt(0) =='\\'){
                     currPath = "C:" + currPath;
                 }
+                File f1=new File(currPath);
+                f1.mkdir();
             }
             else{
-                File f1=new File(path+"\\"+args[i]);
+                File f1=new File(path+"\\"+currPath);
                 f1.mkdir();
             }
         }
     }
     public void rmdir(){
-
+        String[] args = parser.getArgs();
+        for(int i=0; i < args.length;i++){
+            String currPath = args[i];
+            if(currPath.contains("*")){
+                File currDir = new File(path);
+                File[] files = currDir.listFiles();
+                for(File f : files){
+                    f.delete();
+                }
+            }else{
+                if(currPath.charAt(0) =='\\' || (currPath.length()>= 3 && currPath.charAt(0) == 'C' && currPath.charAt(1) == ':' && currPath.charAt(2) == '\\')){
+                    if(currPath.charAt(0) =='\\'){
+                        currPath = "C:" + currPath;
+                    }
+                    File f1=new File(currPath);
+                    f1.delete();
+                }
+            }
+        }
     }
     public void cp(){
 
