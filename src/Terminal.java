@@ -1,5 +1,7 @@
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 
@@ -82,7 +84,6 @@ public class Terminal {
         }
         System.out.println();
     }
-
     public void mkdir(){
         String[] args = parser.getArgs();
         for(int i=0; i < args.length;i++){
@@ -138,10 +139,19 @@ public class Terminal {
         String[] args = parser.getArgs();
         String firstFile=args[0];
         String secondFile=args[1];
-        File oriFile = new File(path+"\\"+firstFile);
-        File newFile = new File(path+"\\"+secondFile);
+        String sourceDirectory = path+"\\"+firstFile;
+        String targetDirectory = path+"\\"+secondFile+"\\"+firstFile;
         try{
-            Files.copy(oriFile.toPath(),newFile.toPath(), StandardCopyOption.REPLACE_EXISTING,StandardCopyOption.COPY_ATTRIBUTES);
+            Files.walk(Paths.get(sourceDirectory))
+                    .forEach(source -> {
+                        Path destination = Paths.get(targetDirectory, source.toString()
+                                .substring(sourceDirectory.length()));
+                        try {
+                            Files.copy(source, destination);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
         }catch(Exception e){
             System.out.println("Error");
         }
