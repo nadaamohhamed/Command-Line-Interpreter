@@ -92,6 +92,8 @@ class Terminal {
                 //case of path = "c:\"
                 if(path.charAt(path.length()-1)!='\\')
                     nwPath = path+'\\'+nwPath;
+                else
+                    nwPath = path + nwPath;
             }
             // case of nwPath contain extra space = "c:\"
             if(nwPath.charAt(nwPath.length()-1) == ' ' ) nwPath = nwPath.substring(0,nwPath.length()-1);
@@ -152,11 +154,16 @@ class Terminal {
                 }
             }else{
                 if(currPath.charAt(0) =='\\' || (currPath.length()>= 3 && currPath.charAt(0) == 'C' && currPath.charAt(1) == ':' && currPath.charAt(2) == '\\')){
-                    if(currPath.charAt(0) =='\\'){
+                    if(currPath.charAt(0) !='\\'){
                         currPath = "C:" + currPath;
                     }
-                    File f1=new File(currPath);
-                    f1.delete();
+
+                }else{
+                    currPath  = path + '\\' + currPath;
+                }
+                File f1=new File(currPath);
+                if(!f1.delete()){
+                    System.out.println(currPath + " " + "is not empty!");
                 }
             }
         }
@@ -178,8 +185,16 @@ class Terminal {
         String[] args = parser.getArgs();
         String firstFile=args[0];
         String secondFile=args[1];
-        String sourceDirectory = path+"\\"+firstFile;
-        String targetDirectory = path+"\\"+secondFile+"\\"+firstFile;
+        String sourceDirectory  , targetDirectory;
+        if(path.charAt(path.length()-1)== '\\'){
+            sourceDirectory = path +  firstFile;
+            targetDirectory = path +  secondFile + "\\" + firstFile;
+        }else
+        {
+            sourceDirectory = path + "\\" + firstFile;
+            targetDirectory = path + "\\" + secondFile + "\\" + firstFile;
+        }
+
         try{
             Files.walk(Paths.get(sourceDirectory))
                     .forEach(source -> {
