@@ -1,11 +1,50 @@
-import org.apache.commons.io.FileUtils;
-
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 
-public class Terminal {
+class Parser {
+    private String commandName;
+    private String[] args;
+
+    public void parse(String input){
+        commandName = "";
+        String[] subStrings = input.split(" ");
+        commandName += subStrings[0];
+        int sz = subStrings.length - 1;
+
+        if(subStrings.length > 1) {
+            int i = 1, j = 0;
+            if (subStrings[i].charAt(0) == '-') {
+                commandName += (' ' + subStrings[i++]);
+                sz--;
+            }
+            args = new String[sz];
+            for (; i < subStrings.length; i++) {
+                args[j++] = subStrings[i];
+            }
+        }
+        else
+            args = new String[sz];
+    }
+    public String getCommandName(){
+        return commandName;
+    }
+    public String[] getArgs(){
+        return args;
+    }
+
+    public void removeLast2(){
+        String nwArgs[] = new String[args.length-2];
+        for(int i = 0 ; i < args.length-2 ; i++){
+            nwArgs[i] = args[i];
+        }
+        args = nwArgs;
+    }
+}
+class Terminal {
     private Parser parser;
     private String path;
     private boolean error;
@@ -135,33 +174,28 @@ public class Terminal {
         }
 
     }
-    public void cp_r(){
+    public void cp_r() {
         String[] args = parser.getArgs();
         String firstFile=args[0];
         String secondFile=args[1];
         String sourceDirectory = path+"\\"+firstFile;
         String targetDirectory = path+"\\"+secondFile+"\\"+firstFile;
-//        try{
-//            Files.walk(Paths.get(sourceDirectory))
-//                    .forEach(source -> {
-//                        Path destination = Paths.get(targetDirectory, source.toString()
-//                                .substring(sourceDirectory.length()));
-//                        try {
-//                            Files.copy(source, destination);
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                    });
-//        }catch(Exception e){
-//            System.out.println("Error");
-//        }
-        File sourceLocation= new File(sourceDirectory);
-        File targetLocation = new File(targetDirectory);
-        try {
-            FileUtils.copyDirectory(sourceLocation, targetLocation);
+        try{
+            Files.walk(Paths.get(sourceDirectory))
+                    .forEach(source -> {
+                        Path destination = Paths.get(targetDirectory, source.toString()
+                                .substring(sourceDirectory.length()));
+                        System.out.println(source);
+                        System.out.println(destination);
+                        try {
+                            Files.copy(source, destination);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
         }
-        catch (IOException e){
-
+        catch(Exception e){
+            System.out.println("Error");
         }
     }
     public void touch(){
@@ -204,11 +238,11 @@ public class Terminal {
         String[] args = parser.getArgs();
         if(args.length ==1){
             try{
-            String firstFile=args[0];
-            File file = new File(path+"\\"+firstFile);
-            Scanner sc = new Scanner(file);
-            while (sc.hasNextLine())
-                System.out.println(sc.nextLine());
+                String firstFile=args[0];
+                File file = new File(path+"\\"+firstFile);
+                Scanner sc = new Scanner(file);
+                while (sc.hasNextLine())
+                    System.out.println(sc.nextLine());
             }catch(IOException e){
                 System.out.println("Error");
             }
@@ -249,7 +283,7 @@ public class Terminal {
             String line;
             while ((line = reader.readLine()) != null) {
                 String temp[] = line.split(" ");
-                wordNum+=temp.length+1;
+                wordNum+=temp.length;
                 charNum +=line.length();
                 lineNum++;
             }
