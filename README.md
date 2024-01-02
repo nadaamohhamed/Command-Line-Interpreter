@@ -8,7 +8,7 @@ Java Implementation of a Command Line Interpreter program - Linux Commands. The 
 - **ls -r**: lists the contents of the current working directory in a reverse order.
 - **mkdir**: creates a new directory in the current working directory.
 - **rmdir**: removes an empty directory/directories from the current working directory, depending on the argument given.
-- **touch**: creates a new file in the current working directory.
+- **touch**: creates a new file in the given working directory.
 - **cp**: copies a file from a given path to another path.
 - **cp -r**: copies a directory from a given path to another path.
 - **rm**: removes a file if it exists from the current working directory.
